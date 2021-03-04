@@ -1,0 +1,68 @@
+// include the library code:
+#include <LiquidCrystal.h>
+
+// initialize the library with the numbers of the interface pins
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+#define TOTAL_MOLES 5
+
+struct Mole{
+  int led_pin;
+  int button_pin;
+};
+
+struct Mole mole_arr[TOTAL_MOLES]={
+  {.led_pin=A0,.button_pin=6},{.led_pin=A1,.button_pin=7},{.led_pin=A2,.button_pin=8},
+  {.led_pin=A3,.button_pin=9},{.led_pin=A4,.button_pin=10}
+};
+
+int count;
+void setup() {
+  Serial.begin(9600);
+  // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+  randomSeed(analogRead(A5));
+  // Print a message to the LCD.
+  lcd.print("Lets Play!");
+  pinMode(6,INPUT_PULLUP);
+  pinMode(A0,OUTPUT);
+  pinMode(7,INPUT_PULLUP);
+  pinMode(A1,OUTPUT);
+  pinMode(8,INPUT_PULLUP);
+  pinMode(A2,OUTPUT);
+   pinMode(9,INPUT_PULLUP);
+  pinMode(A3,OUTPUT);
+   pinMode(10,INPUT_PULLUP);
+  pinMode(A4,OUTPUT);
+  count=0;
+ 
+}
+
+void use_mole(struct Mole* mole){
+    lcd.clear();
+  lcd.print("score:" + String(count));
+    digitalWrite(mole->led_pin,HIGH);
+  delay(2000);
+  digitalWrite(mole->led_pin,LOW);
+  lcd.clear();
+
+  if(digitalRead(mole->button_pin)==HIGH){ //as it behaves as pull_up resistor
+   lcd.print("You Failed!");
+  }
+  else{
+   lcd.print("You hit the mole!");
+    count++;
+
+  }
+  delay(1500);
+}
+ 
+
+
+void loop() {
+  int r=random(TOTAL_MOLES);
+  Serial.println(r);
+  struct Mole* mole=&mole_arr[r];
+   use_mole(mole);
+
+}
+ 
